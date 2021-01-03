@@ -13,6 +13,8 @@ def create_pic_table():
    name TEXT,
    data BLOP)
    """)
+   conn.commit()
+
 
 def create_keyword_table():
    cursor.execute("""
@@ -22,8 +24,9 @@ def create_keyword_table():
    picture_id INT,
    FOREIGN KEY (picture_id) REFERENCES pic_table(id))
    """)
- 
+   conn.commit()
 
+ 
 
 def add_pic(name,data,keyword):
    
@@ -34,37 +37,41 @@ def add_pic(name,data,keyword):
 
    cursor.execute("""
    INSERT INTO keyword_table (keyword, picture_id) VALUES (?,?)""", (keyword, picture_id))
- 
+   
+   conn.commit()
 
-def search_table():
-   cursor.execute("""
+
+def search_table(search_keyword):
+   name_and_pictures = cursor.execute("""
    SELECT pic_table.name, pic_table.data
    FROM pic_table
    INNER JOIN keyword_table
    ON keyword_table.picture_id = pic_table.id
-   """)
+   WHERE keyword_table.keyword = ?
+   """,[search_keyword]).fetchall()
 
-# pdb.set_trace()
-
-create_pic_table()
-create_keyword_table()
+   return name_and_pictures
 
 
-name = 'Sunflower'
-with open('sunflower.jpg','rb') as f:
-   data= f.read()
-keyword = "flower"
+def get_data_for_picture(file_name):
+   with open(file_name,'rb') as f:
+      data = f.read()
 
-add_pic(name,data,keyword)
-
-
-search_table()
+   return data
 
 
+if __name__ == "__main__":
+   create_pic_table()
+   create_keyword_table()
+
+   name = 'Sunflower'
+   data = get_data_for_picture("sunflower.jpg")
+   keyword = "flower"
+
+   add_pic(name, data, keyword)
 
 
+   print search_table("flower")[0]
 
-
-conn.commit()
-cursor.close()
-conn.close()
+   cursor.close()
+   conn.close()
