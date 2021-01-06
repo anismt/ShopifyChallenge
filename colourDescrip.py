@@ -74,35 +74,30 @@ if __name__ == "__main__":
    keyword_list = []
 
    print("Welcome to the Picture Show! Here you will be able to add pictures, attach keywords to those pictures and then later search for those pictures.")
-   print("Let's start off by adding a picture.")
 
    next_pic = ""
    name = ""
    data = ""
+   choice = ""
    
+   while(choice != "e"):
 
-   while(next_pic != "n"):
+      choice = raw_input("What would you like to do? Type s for searching the database, a for adding a picture, k for adding keywords to the picture or e to exit: ")
 
-      name = raw_input("What is the name of your picture: ")
-      data = raw_input("What is the file name: ")
-
-      add_pic(name,data)
-
-      keyword_list = list(map(str, raw_input("Put in all the keywords: ").split()))
-
-      for i in keyword_list:
-         add_keyword(name,data,i)
-
-      next_pic = raw_input("Would you like to add another picture (y/n): ")
-
-      if next_pic == "y":
-         continue
-
-
-   print("Let's search for picture(s) now: ")
-   keyword = raw_input("What is a keyword for your picture: ")
-
-   display_pictures(keyword)
+      if choice == "s":
+         keyword = raw_input("Here we will search for your picture(s)! What is a keyword for your picture(s): ")
+         display_pictures(keyword)
+      if choice == "a":
+         name = raw_input("Here we will add a picture! Give a name to your picture: ")
+         data = raw_input("What is the file name: ")
+         add_pic(name,data)
+      if choice == "k":
+         name = raw_input("Here we will add keywords to your picture! What is the name you gave your picture: ")
+         data = raw_input("What is the file name: ")
+         keyword_list = list(map(str, raw_input("Put in all the keywords seperated by a space: ").split()))
+         for i in keyword_list:
+            add_keyword(name,data,i)
+      
 
    print("Thank you for coming to the Picture Show! Good Day!")
 
