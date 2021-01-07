@@ -117,7 +117,7 @@ if __name__ == "__main__":
             add_keyword(data,i)
 
       if choice == "f":
-         folder = raw_input("What is the pathway to your folder (just do pwd in terminal e.g. /Users/anistariq/misc/shopify/PicFolder, dont put a / after the folder name, or if it happens to be a folder in this folder, simply put PicFolder, do not do PicFolder/ ): ")
+         folder = raw_input("What is the pathway to your folder: ")
          add_folder_of_pics(folder)   
 
    print("Thank you for coming to the Picture Show! Good Day!")
