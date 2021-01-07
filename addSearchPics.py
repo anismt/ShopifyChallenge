@@ -4,7 +4,6 @@ import base64
 import os
 
 
-
 from PIL import Image
 
 
@@ -12,16 +11,13 @@ conn=sqlite3.connect('picDB.db')
 conn.text_factory = str
 cursor = conn.cursor()
 
-
 def create_pic_table():
    cursor.execute("""
    CREATE TABLE IF NOT EXISTS pic_table
    (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-   name TEXT,
    data TEXT)
    """)
    conn.commit()
-
 
 def create_keyword_table():
    cursor.execute("""
@@ -33,37 +29,35 @@ def create_keyword_table():
    """)
    conn.commit()
 
- 
-
-def add_pic(name,data):
-   
+def add_pic(data):
    cursor.execute("""
-   INSERT INTO pic_table (name, data) VALUES (?,?)""", (name, data))
-   
+   INSERT INTO pic_table (data) VALUES (?)""", [data])
    conn.commit()
 
 def add_folder_of_pics(folder):
-   count = 1
-
 
    for pic in os.listdir(folder):
 
       if pic == ".DS_Store":
          continue
 
-      name = raw_input("What name would you like to give photo #" + str(count) + ": ")  
-      data = raw_input("What is the file pathway of photo # (just do pwd in terminal e.g. /Users/anistariq/misc/shopify/PicFolder/sunflower.jpg)" + str(count) + ": ")    
+      data = pic   
+      keyword = raw_input("Lets add a keyword to the photo " + data + ": ")
 
-      add_pic(name,data)
-      count += 1
+      final_data = folder + "/" + data
+      
+      add_pic(final_data)
+      add_keyword(final_data,keyword)
+
+
       conn.commit()
 
 
 
-def add_keyword(name,data,keyword):
+def add_keyword(data,keyword):
 
 
-   picture_id = cursor.execute("""SELECT id FROM pic_table WHERE name=? and data=?""", [name, data]).fetchone()[0]
+   picture_id = cursor.execute("""SELECT id FROM pic_table WHERE data=?""", [data]).fetchone()[0]
 
    cursor.execute("""
    INSERT INTO keyword_table (keyword, picture_id) VALUES (?,?)""", (keyword, picture_id))
@@ -96,38 +90,35 @@ if __name__ == "__main__":
    create_keyword_table()
    keyword_list = []
 
-   print("Welcome to the Picture Show! Here you will be able to add pictures, attach keywords to those pictures and then later search for those pictures.")
+   # print("Welcome to the Picture Show! Here you will be able to add pictures, attach keywords to those pictures and then later search for those pictures.")
 
    next_pic = ""
-   name = ""
    data = ""
    choice = ""
    
 
    while(choice != "e"):
 
-      choice = raw_input("What would you like to do? Type s for searching the database, a for adding a picture, f for adding a folder of pictures, k for adding keywords to the picture or e to exit. This is case-sensitive: ")
+      choice = raw_input("Type s - search, a - add picture, f - add folder, k - adding keywords or e to exit: ").lower()
+
 
       if choice == "s":
-         keyword = raw_input("Here we will search for your picture(s)! What is a keyword for your picture(s): ")
+         keyword = raw_input("What is a keyword for your picture(s) (Yellow): ")
          display_pictures(keyword)
       if choice == "a":
-         name = raw_input("Here we will add a picture! Give a name to your picture: ")
-         data = raw_input("What is the file path (just do pwd in terminal e.g. /Users/anistariq/misc/shopify/PicFolder/sunflower.jpg): ")
-         add_pic(name,data)
+         data = raw_input("What is the photo file name (e.g. sunflower.jpg): ")
+         add_pic(data)
+         keyword = raw_input("Lets add a keyword to the photo " + data + ": ")
+         add_keyword(data,keyword)
       if choice == "k":
-         name = raw_input("Here we will add keywords to your picture! What is the name you gave your picture: ")
-         data = raw_input("What is the file path (just do pwd in terminal e.g. /Users/anistariq/misc/shopify/PicFolder/sunflower.jpg): ")
-         keyword_list = list(map(str, raw_input("Put in all the keywords seperated by a space: ").split()))
+         data = raw_input("What is the photo file name (e.g. sunflower.jpg): ")
+         keyword_list = list(map(str, raw_input("Put in all the keywords seperated by a space (for moon.jpg - Lune Round White) : ").split()))
          for i in keyword_list:
-            add_keyword(name,data,i)
+            add_keyword(data,i)
 
       if choice == "f":
-         folder = raw_input("What is the pathway to your folder (just do pwd in terminal e.g. /Users/anistariq/misc/shopify/PicFolder): ")
-         add_folder_of_pics(folder)
-      # r "C:\Users\anistariq\misc\shopify\PicFolder"
-
-      
+         folder = raw_input("What is the pathway to your folder (just do pwd in terminal e.g. /Users/anistariq/misc/shopify/PicFolder, dont put a / after the folder name, or if it happens to be a folder in this folder, simply put PicFolder, do not do PicFolder/ ): ")
+         add_folder_of_pics(folder)   
 
    print("Thank you for coming to the Picture Show! Good Day!")
 
