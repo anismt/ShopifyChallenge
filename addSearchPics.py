@@ -86,6 +86,21 @@ def pic_table_length():
    conn.commit()
    return lis
 
+def keyword_table_length():
+   tab_len = cursor.execute("""
+   SELECT keyword_table.keyword
+   FROM keyword_table
+   """)
+   
+   lis = []
+   
+   for x in tab_len:
+      lis.append(x[0])
+   
+   conn.commit()
+   return lis
+
+
 def display_pictures(keyword):
    
    for i in range(0,len(search_table(keyword))):
@@ -107,32 +122,45 @@ if __name__ == "__main__":
    choice = ""
 
    while(choice != "e"):
-      choice = raw_input("Type s - search, a - add picture, f - add folder, k - adding more keywords or e to exit: ").lower()
+      choice = raw_input("Type s - search, a - add picture, f - add folder of pictures, k - adding more keywords or e to exit: ").lower()
 
       if choice == "s":
-         keyword = raw_input("What is a keyword for your picture(s) (Yellow): ")
-         display_pictures(keyword)
+         
+         if len(pic_table_length()) == 0:
+            print("There are no pictures in the database to search from!")
+         else:
+            keyword = raw_input("What is a keyword for your picture(s) (Yellow): ")
+
+            if keyword not in keyword_table_length():
+               print("There are no pictures with " + keyword + " as their keywords!")
+            else:
+               display_pictures(keyword)
       if choice == "a":
-         data = raw_input("What is the photo file name (e.g. sunflower.jpg): ")
-         add_pic(data)
-         keyword = raw_input("Lets add a keyword to the photo " + data + ": ")
-         add_keyword(data,keyword)
+
+         data = raw_input("What is the photo file name path (e.g. sunflower.jpg, PicFolder/moon.jpg): ")
+         if data in pic_table_length():
+            print("This picture is already in the database!")
+         else:
+            add_pic(data)
+            keyword = raw_input("Lets add a keyword to the photo " + data + ": ")
+            add_keyword(data,keyword)
          
       if choice == "k":
          if len(pic_table_length()) == 0:
             print("There are no pictures to add keywords to!")
          else:
             print(pic_table_length())
-            print("These are the photos currently in the database:")
             data = raw_input("What is the photo path, select from above (e.g. sunflower.jpg, PicFolder/moon.jpg): ")
-            keyword_list = list(map(str, raw_input("Put in all the keywords seperated by a space (for moon.jpg - Lune Round White) : ").split()))         
-            for i in keyword_list:
-               add_keyword(data,i)
+            if data not in pic_table_length():
+               print("There are no pictures like " + data + " in the database!")
+            else:
+               keyword_list = list(map(str, raw_input("Put in all the keywords seperated by a space (for moon.jpg - Lune Round White) : ").split()))         
+               for i in keyword_list:
+                  add_keyword(data,i)
 
       if choice == "f":
          folder = raw_input("What is the pathway to your folder: ")
          add_folder_of_pics(folder)   
-         count = 1  
    print("Thank you for coming to the Picture Show! Good Day!")
 
    cursor.close()
