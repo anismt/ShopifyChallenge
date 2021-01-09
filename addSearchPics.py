@@ -108,6 +108,10 @@ def display_pictures(keyword):
       img = Image.open(search_table(keyword)[i][0])
       img.show()
 
+def display_specific_pic(pic_id):
+   img = Image.open(pic_id)
+   img.show()
+
 if __name__ == "__main__":
 
    create_pic_table()
@@ -120,6 +124,7 @@ if __name__ == "__main__":
    next_pic = ""
    data = ""
    choice = ""
+   what_pic = ""
 
    while(choice != "e"):
       choice = raw_input("Type s - search, a - add picture, f - add folder of pictures, k - adding more keywords or e to exit: ").lower()
@@ -134,7 +139,17 @@ if __name__ == "__main__":
             if keyword not in keyword_table_length():
                print("There are no pictures with " + keyword + " as their keywords!")
             else:
-               display_pictures(keyword)
+               if len(search_table(keyword)) == 1:
+                  display_specific_pic(keyword)
+               else:
+                  for i in range(0,len(search_table(keyword))):
+                     print(search_table(keyword)[i][0])
+                  while(what_pic != "all" or what_pic != "d"):
+                     what_pic = raw_input("What picture would you like to open, type all for all photos:, or d for done: ").lower()
+                     if what_pic != "all":
+                        display_specific_pic(what_pic)
+                  if what_pic == "all":
+                     display_pictures(keyword)
       if choice == "a":
 
          data = raw_input("What is the photo file name path (e.g. sunflower.jpg, PicFolder/moon.jpg): ")
