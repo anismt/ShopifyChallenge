@@ -146,7 +146,9 @@ if __name__ == "__main__":
                      print(search_table(keyword)[i][0])
                   while(what_pic != "all" or what_pic != "d"):
                      what_pic = raw_input("What picture would you like to open, type all for all photos:, or d for done: ").lower()
-                     if what_pic != "all":
+                     if what_pic == "all" or what_pic == "d":
+                        break
+                     else:
                         display_specific_pic(what_pic)
                   if what_pic == "all":
                      display_pictures(keyword)
